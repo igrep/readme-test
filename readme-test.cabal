@@ -18,6 +18,8 @@ Library
   Build-Depends:        base >= 4 && < 5
                       , conduit-extra == 1.*
                       , conduit == 1.*
+                      , async == 2.*
+                      , transformers
                       , bytestring
                       , resourcet
 
@@ -28,7 +30,9 @@ executable readme-test
   Build-Depends:        base >= 4 && < 5
                       , conduit-extra == 1.*
                       , conduit == 1.*
+                      , async == 2.*
                       , bytestring
+                      , transformers
                       , resourcet
                       , readme-test
 
@@ -37,7 +41,7 @@ Test-Suite spec
   Default-Language:     Haskell2010
   Hs-Source-Dirs:       src
                       , test
-  Ghc-Options:          -Wall
+  Ghc-Options:          -Wall -threaded
   Main-Is:              Spec.hs
   Build-Depends:        base
                       , hspec
