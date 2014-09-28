@@ -5,15 +5,19 @@ where
 
 import Data.Conduit
 import Data.Conduit.Process
-import Control.Concurrent.Async (Concurrently (..))
-import Control.Applicative ((*>))
 import qualified Data.Conduit.Binary as CB
 import qualified Data.Conduit.List as CL
+
+import Control.Concurrent.Async (Concurrently (..))
+import Control.Applicative ((*>))
 import Control.Monad.Trans.Resource
 import Control.Monad.IO.Class
-import System.IO
 import Control.Monad (forM_)
+
+import System.IO
+
 import qualified Data.ByteString.Char8 as BSC8
+
 import Test.ReadmeTest.Internal
 
 readmeTestWith :: FilePath -> [FilePath] -> IO ()
