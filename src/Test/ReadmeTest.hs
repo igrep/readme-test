@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Test.ReadmeTest
   ( readmeTestWith
   )
@@ -17,15 +19,16 @@ import Control.Monad (forM_)
 import System.IO
 
 import qualified Data.ByteString.Char8 as BSC8
+import Data.Monoid ((<>))
 
 import Test.ReadmeTest.Internal
 
 readmeTestWith :: FilePath -> [FilePath] -> IO ()
 readmeTestWith driverPath readmePaths = do
   forM_ readmePaths $ \ readmePath -> do
-    (toProcess, fromProcess, Inherited, cph) <- streamingProcess (proc driverPath [])
+    ((toProcess, close), fromProcess, Inherited, cph) <- streamingProcess (proc driverPath [])
 
-    let input = runResourceT $ CB.sourceFile readmePath $= conduitDebug $$ toProcess
+    let input = runResourceT $ CB.sourceFile readmePath $$ conduitWithCloser close =$ toProcess
     let output = fromProcess $$ CB.sinkHandle stdout
 
     _ <- runConcurrently $
@@ -38,7 +41,7 @@ readmeTestWith driverPath readmePaths = do
 sourceSourceCodeLines :: MonadResource m => FilePath -> Source m BSC8.ByteString
 sourceSourceCodeLines fp = CB.sourceFile fp $= CB.lines
 
-conduitDebug :: MonadIO m => Conduit BSC8.ByteString m BSC8.ByteString
-conduitDebug = awaitForever $ \ chunk -> do
-  liftIO $ BSC8.putStrLn chunk
-  return chunk
+conduitWithCloser :: MonadIO m => Conduit BSC8.ByteString m BSC8.ByteString -> Conduit BSC8.ByteString m BSC8.ByteString
+conduitWithCloser close = await >>= maybe close yielder
+  where
+    yielder bs = yield bs >> (conduitWithCloser close)
