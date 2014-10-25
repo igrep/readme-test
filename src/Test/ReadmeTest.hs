@@ -19,7 +19,6 @@ import Control.Monad (forM_)
 import System.IO
 
 import qualified Data.ByteString.Char8 as BSC8
-import Data.Monoid ((<>))
 
 import Test.ReadmeTest.Internal
 
@@ -28,7 +27,7 @@ readmeTestWith driverPath readmePaths = do
   forM_ readmePaths $ \ readmePath -> do
     ((toProcess, close), fromProcess, Inherited, cph) <- streamingProcess (proc driverPath [])
 
-    let input = runResourceT $ CB.sourceFile readmePath $$ conduitWithCloser close =$ toProcess
+    let input = runResourceT $ sourceSourceCodeLines readmePath $$ conduitWithCloser close =$ toProcess
     let output = fromProcess $$ CB.sinkHandle stdout
 
     _ <- runConcurrently $
@@ -39,7 +38,10 @@ readmeTestWith driverPath readmePaths = do
     return ()
 
 sourceSourceCodeLines :: MonadResource m => FilePath -> Source m BSC8.ByteString
-sourceSourceCodeLines fp = CB.sourceFile fp $= CB.lines
+sourceSourceCodeLines fp = CB.sourceFile fp $= conduitLines
+
+conduitLines :: Monad m => Conduit BSC8.ByteString m BSC8.ByteString
+conduitLines = CB.lines =$= awaitForever (\chunk -> yield chunk >> yield "\n")
 
 conduitWithCloser :: MonadIO m => Conduit BSC8.ByteString m BSC8.ByteString -> Conduit BSC8.ByteString m BSC8.ByteString
 conduitWithCloser close = await >>= maybe close yielder
