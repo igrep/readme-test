@@ -1,6 +1,0 @@
-#!/usr/bin/env ruby
-
-$stdin.each do|l|
-  result = eval l, TOPLEVEL_BINDING
-  puts "#=> #{result.inspect}"
-end

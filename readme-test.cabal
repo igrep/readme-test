@@ -1,51 +1,61 @@
-Name:                   readme-test
-Version:                0.0.0
-Author:                 Yuji Yamamoto <whosekiteneverfly@gmail.com>
-Maintainer:             Yuji Yamamoto <whosekiteneverfly@gmail.com>
-License:                BSD3
-License-File:           LICENSE
-Synopsis:               Language-agnostic doctest.
-Description:            Language-agnostic doctest.
-Cabal-Version:          >= 1.10
-Build-Type:             Simple
+cabal-version:          2.4
+name:                   readme-test
+version:                0.1.1
+author:                 YAMAMOTO Yuji <whosekiteneverfly@gmail.com>
+maintainer:             YAMAMOTO Yuji <whosekiteneverfly@gmail.com>
+copyright:              2020 YAMAMOTO Yuji
+license:                Apache-2.0
+license-file:           LICENSE
+homepage:               https://github.com/igrep/readme-test
+category:               Test
+synopsis:               Language-agnostic doctest.
+description:            Language-agnostic doctest.
+build-type:             Simple
 
-Library
-  Default-Language:     Haskell2010
-  HS-Source-Dirs:       src
-  GHC-Options:          -Wall -threaded
-  Exposed-Modules:      Test.ReadmeTest
-  Other-Modules:        Test.ReadmeTest.Internal
-  Build-Depends:        base >= 4 && < 5
-                      , conduit-extra == 1.*
-                      , conduit == 1.*
-                      , async == 2.*
-                      , transformers
-                      , bytestring
-                      , resourcet
+common common
+  build-depends:       base >= 4.7 && < 5
+                     , exceptions
+                     , mtl
+                     , text
+  default-language:    Haskell2010
+
+common common-executable
+  build-depends:       readme-test
+  ghc-options:         -threaded -rtsopts
+
+library
+  import:               common
+  hs-source-dirs:       src
+  ghc-options:          -Wall
+  exposed-modules:      Test.ReadmeTest
+  other-modules:        Test.ReadmeTest.Internal
+  build-depends:        bytestring
+                      , errors
+                      , filepath
+                      , generic-lens
+                      , microlens
+                      , microlens-mtl
+                      , regex
+                      , typed-process
 
 executable readme-test
-  Main-Is:              Main.hs
-  Hs-Source-Dirs:       src
-  GHC-Options:          -Wall -threaded
-  Build-Depends:        base >= 4 && < 5
-                      , conduit-extra == 1.*
-                      , conduit == 1.*
-                      , async == 2.*
-                      , bytestring
-                      , transformers
-                      , resourcet
-                      , readme-test
+  import:               common, common-executable
+  main-is:              Main.hs
+  hs-source-dirs:       app
+  ghc-options:          -Wall -threaded
+  build-depends:        base >= 4 && < 5
 
-Test-Suite spec
-  Type:                 exitcode-stdio-1.0
-  Default-Language:     Haskell2010
-  Hs-Source-Dirs:       src
-                      , test
-  Ghc-Options:          -Wall -threaded
-  Main-Is:              Spec.hs
-  Build-Depends:        base
+test-suite readme-test-spec
+  import:               common, common-executable
+  type:                 exitcode-stdio-1.0
+  hs-source-dirs:       test
+  ghc-options:          -Wall -threaded
+  main-is:              Spec.hs
+  other-modules:        Test.ReadmeTestSpec
+  build-depends:        base
                       , hspec
+                      , QuickCheck
 
-Source-Repository head
-  Type:                 git
-  Location:             https://github.com/igrep/readme-test
+source-repository head
+  type:                 git
+  location:             https://github.com/igrep/readme-test

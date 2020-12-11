@@ -13,7 +13,7 @@ TODO: Write usage instructions here
 ## How to run tests
 
 ```
-cabal configure --enable-tests && cabal build && cabal test
+cabal test
 ```
 
 ## Contributing
