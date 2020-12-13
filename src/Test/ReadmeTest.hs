@@ -141,7 +141,7 @@ parseLineInComparison :: T.Text -> ParsedLineInComparison
 parseLineInComparison = fromMaybe ExpectedLine . f
  where
   f line =
-    (Comment <$ guard ("--" `T.isPrefixOf` line))
+    (Comment <$ guard ("--" `T.isPrefixOf` line || T.null line))
       <|> (LineToTest <$> T.stripPrefix ">" line)
 
 
