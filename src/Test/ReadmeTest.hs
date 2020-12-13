@@ -277,7 +277,7 @@ formatExpectations comparisons =
         idTest = "rtcapT_" <> beginsAtT
         idExpected = "rtcapE_" <> T.pack (show expectedLineAt)
         description = "\"comparison at " <> beginsAtT <> "\""
-    Just $ "HUnit.TestCase (HUnit.assertEqual " <> description <> " " <> idTest <> "  " <> idExpected <> ")"
+    Just $ "HUnit.TestCase (HUnit.assertEqual " <> description <> " " <> idExpected <> "  " <> idTest <> ")"
 
 indent :: T.Text
 indent = "  "
