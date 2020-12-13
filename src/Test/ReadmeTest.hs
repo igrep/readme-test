@@ -269,7 +269,7 @@ processLine _path ln line = do
 -- Public only for testing
 formatExpectations :: [Comparison] -> T.Text
 formatExpectations comparisons =
-  indent <> "HUnit.TestList [" <> T.intercalate ", " (mapMaybe f comparisons) <> "]"
+  indent <> "HUnit.TestList [" <> T.intercalate ", " (mapMaybe f $ reverse comparisons) <> "]"
  where
   f Comparison { firstExpectedLineAt = Nothing } = Nothing
   f Comparison { beginsAt, firstExpectedLineAt = Just expectedLineAt } = do
@@ -291,7 +291,7 @@ generateMain AppState { foundCompareAfterPrompts } = mainLines <> testsLines <> 
     , "main :: IO ()"
     , "main = runTestTTAndExit $ HUnit.TestList"
     ]
-  testsLines = braOpen <> T.intercalate sep (map f foundCompareAfterPrompts) <> braClose
+  testsLines = braOpen <> T.intercalate sep (map f $ reverse foundCompareAfterPrompts) <> braClose
   f comparisonLn = "readmeTestCompareAfterPrompt" <> T.pack (show comparisonLn) <> "_"
   braOpen = indent <> "[ "
   braClose = "\n" <> indent <> "]"
